@@ -20,6 +20,26 @@ app.use(express.json())
 
 //CRUD = create, read, uptade, delete
 
+//rotas
+
+app.post("/edit/save", (req, res) =>{
+    const {id, title, pageqty} = req.body
+    
+    const sql = `
+    UPTADE books
+    SET title = '${title}', pageqty = '${pageqty}
+    WHERE id = ${id}
+    `
+
+    conn.query(sql, (error) =>{
+        if (error){
+            return console.log(error)
+        }
+
+        res.redirect("/")
+    })
+})
+
 
 //rotas
 app.post("/register/save", (req, res)=> {
@@ -39,8 +59,26 @@ app.post("/register/save", (req, res)=> {
     })
 })
 
+app.get("/edit/id", (req, res)=>{
+    const id = res.params.id
+    const sql = `
+        SELECT * FROM books
+        WHERE id = ${id}
+    `
+
+    conn.query(sql,(error,data) => {
+        if(error){
+            return console.log(error)
+        }
+        const book = data [0]
+
+        res.render('edit', {book})
+    })
+})
+
+
 app.get("/book/:id", (req, res)=> {
-    const id = request.params.id
+    const id = req.params.id
 
     const sql = `
         SELECT * FROM books
@@ -54,7 +92,7 @@ app.get("/book/:id", (req, res)=> {
 
         const book = data[0]
 
-        response.render("book", {book})
+        res.render("book", {book})
     })
 })
 
